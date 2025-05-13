@@ -28,3 +28,16 @@ body {
   padding: 20px;
   background-color: #333;
 }
+
+body.end {
+  background-image: url('assets/final-scene.png');
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1s ease-in-out;
+}
+
+/* Skjul kart og puzzle når spillet er ferdig */
+body.end #game-map,
+body.end #puzzle {
+  display: none;
+}

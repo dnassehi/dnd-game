@@ -78,10 +78,22 @@ function solvePuzzle() {
 }
 
 function endGame() {
-  document.getElementById("dialogue").innerText = "Du finner vennen din! Han husker deg og gråter av glede!";
-  document.getElementById("puzzle").innerHTML = "<strong>Eventyret er fullført.</strong>";
-  document.getElementById("ending-music").play();
-  document.body.style.backgroundImage = "url('final-scene.jpg')";
+  // 1) Endre dialog-tekst
+  document.getElementById("dialogue").innerText =
+    "Du finner vennen din! Han husker deg og gråter av glede!";
+
+  // 2) Vis kun fullført-melding
+  document.getElementById("puzzle").innerHTML =
+    "<strong>Eventyret er fullført.</strong>";
+
+  // 3) Spill av musikk fra starten og juster volum
+  const music = document.getElementById("ending-music");
+  music.currentTime = 0;
+  music.volume = 0.7;
+  music.play();
+
+  // 4) Legg på CSS-klassen som setter final-scene bakgrunn
+  document.body.classList.add("end");
 }
 
 document.addEventListener("keydown", (e) => {
