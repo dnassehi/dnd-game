@@ -16,29 +16,28 @@ app.use(cors())
 app.use(express.json())
 
 app.post('/api/prompt', async (req, res) => {
-  const { character, location, prompt } = req.body
+  const { character, location, prompt: customPrompt } = req.body;
 
-  // Bygg prompt-en
-  const prompt = 
+  const fullPrompt = customPrompt || 
     `Du er karakteren ${character}. ` +
     `Spill en rolle i et fantasy-eventyr og gi spilleren en gåte eller oppgave som de må løse for å komme videre. ` +
-    `Oppgaven må være gåteaktig og knyttet til stedet "${location}". Ikke avslør løsningen.`
+    `Oppgaven må være gåteaktig og knyttet til stedet "${location}". Ikke avslør løsningen.`;
 
   try {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-4o-mini',   // eller 'gpt-4' om du har tilgang
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o', // eller 'gpt-4o-mini' hvis ønskelig
       messages: [
         { role: 'system', content: 'Du er en fantasirik eventyrmester i et klassisk rollespill.' },
         { role: 'user', content: fullPrompt }
       ]
-    })
+    });
 
-    const responseText = chatCompletion.choices[0].message.content.trim()
-    res.json({ text: responseText })
+    const responseText = completion.choices[0].message.content.trim();
+    res.json({ text: responseText });
 
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: err.message })
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 })
 
