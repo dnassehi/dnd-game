@@ -18,11 +18,15 @@ app.use(express.json())
 app.post('/api/prompt', async (req, res) => {
   const { character, location, prompt } = req.body
 
-  const fullPrompt = prompt || `Lag en fantasigåte for karakteren ${character} ved stedet ${location}. Ikke avslør svaret.`
+  // Bygg prompt-en
+  const prompt = 
+    `Du er karakteren ${character}. ` +
+    `Spill en rolle i et fantasy-eventyr og gi spilleren en gåte eller oppgave som de må løse for å komme videre. ` +
+    `Oppgaven må være gåteaktig og knyttet til stedet "${location}". Ikke avslør løsningen.`
 
   try {
-    const chatCompletion = await openai.chat.completions.create({
-      model: 'gpt-4o', // eller gpt-3.5-turbo hvis du vil spare tokenkostnader
+    const completion = await openai.createChatCompletion({
+      model: 'gpt-4o-mini',   // eller 'gpt-4' om du har tilgang
       messages: [
         { role: 'system', content: 'Du er en fantasirik eventyrmester i et klassisk rollespill.' },
         { role: 'user', content: fullPrompt }
@@ -33,7 +37,7 @@ app.post('/api/prompt', async (req, res) => {
     res.json({ text: responseText })
 
   } catch (err) {
-    console.error('Feil fra OpenAI:', err)
+    console.error(err)
     res.status(500).json({ error: err.message })
   }
 })
