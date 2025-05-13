@@ -34,12 +34,7 @@ body {
 /* ----------------------------- */
 
 body.end {
-  background-image: url('assets/final-scene.jpg');
-  background-size: 110%;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: background-size 10s ease-in-out;
-  animation: zoomScene 10s forwards;
+  background-color: black; /* valgfritt bakgrunnsfyll */
   overflow: hidden;
 }
 
@@ -103,4 +98,15 @@ body.end #play-again {
   border-radius: 8px;
   cursor: pointer;
   animation: fadeInText 2s ease-in 3.5s both;
+}
+
+#final-image {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  z-index: 0;
 }

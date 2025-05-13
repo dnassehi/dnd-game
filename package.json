@@ -1,0 +1,27 @@
+{
+  "name": "dnd-game",
+  "version": "1.0.0",
+  "description": "Et enkelt, tekstbasert eventyrspill laget med HTML, CSS og JavaScript – inspirert av klassisk Dungeons & Dragons. Spilleren reiser mellom fem steder og møter karakterer som gir AI-genererte oppgaver. Målet: å finne sin tapte barndomsvenn.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnassehi/dnd-game.git"
+  },
+  "keywords": [],
+  "author": "Damoun Nassehi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dnassehi/dnd-game/issues"
+  },
+  "homepage": "https://github.com/dnassehi/dnd-game#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "openai": "^4.98.0"
+  }
+}

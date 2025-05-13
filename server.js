@@ -1,48 +1,44 @@
 // server.js
+
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { Configuration, OpenAIApi } from 'openai'
+import OpenAI from 'openai'
 
 dotenv.config()
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+})
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-// Sett opp OpenAI-klient
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
-})
-const openai = new OpenAIApi(configuration)
-
-// Endepunkt for å hente en gåte/oppgave
 app.post('/api/prompt', async (req, res) => {
-  const { character, location } = req.body
+  const { character, location, prompt } = req.body
 
-  // Bygg prompt-en
-  const prompt = 
-    `Du er karakteren ${character}. ` +
-    `Spill en rolle i et fantasy-eventyr og gi spilleren en gåte eller oppgave som de må løse for å komme videre. ` +
-    `Oppgaven må være gåteaktig og knyttet til stedet "${location}". Ikke avslør løsningen.`
+  const fullPrompt = prompt || `Lag en fantasigåte for karakteren ${character} ved stedet ${location}. Ikke avslør svaret.`
 
   try {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-4o-mini',   // eller 'gpt-4' om du har tilgang
+    const chatCompletion = await openai.chat.completions.create({
+      model: 'gpt-4o', // eller gpt-3.5-turbo hvis du vil spare tokenkostnader
       messages: [
-        { role: 'system', content: 'Du er en eventyrspill-GM som elsker fantasy.' },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.8,
-      max_tokens: 150
+        { role: 'system', content: 'Du er en fantasirik eventyrmester i et klassisk rollespill.' },
+        { role: 'user', content: fullPrompt }
+      ]
     })
-    const text = completion.data.choices[0].message.content.trim()
-    res.json({ text })
+
+    const responseText = chatCompletion.choices[0].message.content.trim()
+    res.json({ text: responseText })
+
   } catch (err) {
-    console.error(err)
+    console.error('Feil fra OpenAI:', err)
     res.status(500).json({ error: err.message })
   }
 })
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`Server kjører på port ${PORT}`))
+const PORT = 3000
+app.listen(PORT, () => {
+  console.log(`✅ Backend-server kjører på http://localhost:${PORT}`)
+})

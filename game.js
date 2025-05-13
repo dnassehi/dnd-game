@@ -39,9 +39,8 @@ async function showDialogue(location) {
   const puzzleEl   = document.getElementById("puzzle");
 
   dialogueEl.innerText = "Laster oppgave…";
-  puzzleEl.innerHTML  = "";
+  puzzleEl.innerHTML  = ""; // Tøm tidligere input/knapp
 
-  // Velg om vi har en custom prompt, ellers fallback:
   const promptToSend = customPrompts[location.name] ||
     `Du er ${location.character} ved ${location.name}. Lag en fantasigåte uten å avsløre løsningen.`;
 
@@ -51,21 +50,39 @@ async function showDialogue(location) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         character: location.character,
-        location:  location.name,
-        prompt:    promptToSend     // send også prompten, om du ønsker
+        location: location.name,
+        prompt: promptToSend
       })
     });
+
     const { text } = await resp.json();
     dialogueEl.innerText = `Her møter du ${location.character}: „${text}“`;
+
+    // Nå: vis input + knapp
+    puzzleEl.innerHTML = `
+      <input type="text" id="player-answer" placeholder="Skriv svaret ditt her..." 
+             style="padding: 10px; width: 60%; font-size: 1em;">
+      <br><br>
+      <button onclick="solvePuzzle()">Svar</button>
+    `;
   } catch (err) {
     console.error(err);
     dialogueEl.innerText = "Beklager, det skjedde en feil ved henting av oppgaven.";
+    puzzleEl.innerHTML = "";
   }
-
-  puzzleEl.innerHTML = `<button onclick="solvePuzzle()">Svar</button>`;
 }
 
 function solvePuzzle() {
+  const inputEl = document.getElementById("player-answer");
+  const answer = inputEl ? inputEl.value.trim() : "";
+
+  if (answer === "") {
+    alert("Skriv et svar før du går videre!");
+    return;
+  }
+
+  // Her kan du senere legge til kontroll mot riktig svar
+
   if (!visited.includes(currentIndex)) {
     visited.push(currentIndex);
   }
@@ -73,7 +90,7 @@ function solvePuzzle() {
   if (visited.length === locations.length) {
     endGame();
   } else {
-    alert("Bra jobbet! Gå videre.");
+    alert("Takk for svaret ditt! Gå videre til neste post.");
   }
 }
 
@@ -93,7 +110,9 @@ function endGame() {
   music.play();
 
   // 4) Legg på CSS-klassen som setter final-scene bakgrunn
+  document.getElementById("final-image").style.display = "block";
   document.body.classList.add("end");
+
 }
 
 document.addEventListener("keydown", (e) => {
