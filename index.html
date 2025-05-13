@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Eventyret: Letingen etter vennen</title>
-  <!-- Koble ekstern CSS -->
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { font-family: fantasy; background-color: #222; color: #eee; text-align: center; }
+    #game-map { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+    .location { border: 2px solid #ccc; padding: 20px; width: 120px; height: 120px; background-color: #444; cursor: pointer; }
+    .active { border-color: gold; }
+    #dialogue, #puzzle { margin-top: 30px; padding: 20px; background-color: #333; }
+  </style>
 </head>
 <body>
   <h1>Letingen etter barndomsvennen</h1>
-
   <div id="game-map"></div>
   <div id="dialogue"></div>
   <div id="puzzle"></div>
-
-  <!-- Lyd og grafikk -->
-  <audio id="ending-music" src="assets/dramatic_music.mp3" preload="auto"></audio>
-
-  <!-- Koble inn JavaScript nederst -->
+  <audio id="ending-music" src="dramatic_music.mp3" preload="auto"></audio>
   <script src="game.js"></script>
 </body>
 </html>
