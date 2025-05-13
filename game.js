@@ -24,14 +24,28 @@ function renderMap() {
   });
 }
 
-function showDialogue(location) {
-  document.getElementById("dialogue").innerText =
-    `Her møter du ${location.character}. Hun sier: "${location.prompt}"`;
+async function showDialogue(location) {
+  const dialogue = document.getElementById("dialogue")
+  dialogue.innerText = "Laster oppgave…"
 
-  // Her kan du koble til OpenAI API (GPT) for respons senere.
-  document.getElementById("puzzle").innerHTML = `
-    <button onclick="solvePuzzle()">Svar</button>
-  `;
+  try {
+    const resp = await fetch("http://localhost:3000/api/prompt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        character: location.character,
+        location: location.name
+      })
+    })
+    const { text } = await resp.json()
+    dialogue.innerText = `"${text}"`
+  } catch (e) {
+    dialogue.innerText = "Beklager, det skjedde en feil ved henting av oppgave."
+    console.error(e)
+  }
+
+  document.getElementById("puzzle").innerHTML =
+    `<button onclick="solvePuzzle()">Svar</button>`
 }
 
 function solvePuzzle() {
