@@ -1,9 +1,9 @@
 const locations = [
-  { name: "Kroneskogen", character: "Kia", prompt: "Du må finne nøkkelen som åpner porten." },
-  { name: "Grått Slott", character: "Mini", prompt: "Hvilket tall kommer neste i rekken: 2, 4, 8, 16, ?" },
-  { name: "Tåkemyra", character: "Kia", prompt: "Finn ordet som mangler: Jeg er ... som natten." },
-  { name: "Solklippen", character: "Mini", prompt: "Hva kan du fange men aldri kaste?" },
-  { name: "Glemselens Hule", character: "Kia", prompt: "Hvilket dyr går på fire bein om morgenen, to om dagen og tre om kvelden?" }
+  { name: "Kroneskogen", character: "Kia" },
+  { name: "Grått Slott", character: "Mini" },
+  { name: "Tåkemyra", character: "Kia" },
+  { name: "Solklippen", character: "Mini" },
+  { name: "Glemselens Hule", character: "Kia" }
 ];
 
 let currentIndex = 0;
@@ -24,9 +24,26 @@ function renderMap() {
   });
 }
 
+// 2) Lim inn prompt-malene her:
+const customPrompts = {
+  "Kroneskogen":      `Du er karakteren Kia. Spill en kreativ fantasyrolle i Kroneskogen og gi spilleren en gåte som handler om hemmelige stier og skjulte nøkler.`,
+  "Grått Slott":      `Du er karakteren Mini. Spill portvakten i Grått Slott og gi spilleren en matematisk gåte som tester vaktens logikk.`,
+  "Tåkemyra":         `Du er karakteren Kia. I den tåkete myra ber du spilleren finne det ene ordet som løfter tåken.`,
+  "Solklippen":       `Du er karakteren Mini. Ved Solklippen stiller du en klassisk gåte om natur og lys.`,
+  "Glemselens Hule":  `Du er karakteren Kia. Inni Glemselens Hule må spilleren løse en gåte om livets tre stadier.`
+};
+
+// 3) Deretter resten av funksjonene, f.eks.:
 async function showDialogue(location) {
-  const dialogue = document.getElementById("dialogue")
-  dialogue.innerText = "Laster oppgave…"
+  const dialogueEl = document.getElementById("dialogue");
+  const puzzleEl   = document.getElementById("puzzle");
+
+  dialogueEl.innerText = "Laster oppgave…";
+  puzzleEl.innerHTML  = "";
+
+  // Velg om vi har en custom prompt, ellers fallback:
+  const promptToSend = customPrompts[location.name] ||
+    `Du er ${location.character} ved ${location.name}. Lag en fantasigåte uten å avsløre løsningen.`;
 
   try {
     const resp = await fetch("http://localhost:3000/api/prompt", {
@@ -34,18 +51,18 @@ async function showDialogue(location) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         character: location.character,
-        location: location.name
+        location:  location.name,
+        prompt:    promptToSend     // send også prompten, om du ønsker
       })
-    })
-    const { text } = await resp.json()
-    dialogue.innerText = `"${text}"`
-  } catch (e) {
-    dialogue.innerText = "Beklager, det skjedde en feil ved henting av oppgave."
-    console.error(e)
+    });
+    const { text } = await resp.json();
+    dialogueEl.innerText = `Her møter du ${location.character}: „${text}“`;
+  } catch (err) {
+    console.error(err);
+    dialogueEl.innerText = "Beklager, det skjedde en feil ved henting av oppgaven.";
   }
 
-  document.getElementById("puzzle").innerHTML =
-    `<button onclick="solvePuzzle()">Svar</button>`
+  puzzleEl.innerHTML = `<button onclick="solvePuzzle()">Svar</button>`;
 }
 
 function solvePuzzle() {
